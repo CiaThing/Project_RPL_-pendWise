@@ -18,23 +18,19 @@ class LoginPage(tk.Tk):
         title_label = tk.Label(self, text="Login Page", font=("Arial", 18, "bold"), bg="lightgreen", fg="green")
         title_label.pack(pady=10)
         
-        # Email Label and Entry
         email_label = tk.Label(self, text="Email", font=("Arial", 12), bg="lightgreen")
         email_label.pack()
         self.email_entry = tk.Entry(self, width=30)
         self.email_entry.pack(pady=5)
         
-        # Password Label and Entry
         password_label = tk.Label(self, text="Password", font=("Arial", 12), bg="lightgreen")
         password_label.pack()
         self.password_entry = tk.Entry(self, show='*', width=30)
         self.password_entry.pack(pady=5)
         
-        # Submit Button
         submit_button = tk.Button(self, text="Login", command=self.submit)
         submit_button.pack(pady=10)
         
-        # Register Button
         register_button = tk.Button(self, text="Register", command=self.go_to_register, width=20)
         register_button.pack(pady=10)
         
@@ -44,7 +40,6 @@ class LoginPage(tk.Tk):
         
         if email and password:
             try:
-                # Retrieve user data from Firebase based on email
                 result = db.reference('Users').order_by_child('email').equal_to(email).get()
                 
                 if not result:
@@ -65,7 +60,6 @@ class LoginPage(tk.Tk):
             messagebox.showerror("Error", "Please fill in all fields.")
     
     def redirect_to_home(self, email):
-        # Destroy current window and open home page
         self.destroy()
         home_page = HomePage(db.reference('Users'), email)
         home_page.mainloop()

@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
-from firebase_admin import db, initialize_app, credentials
 
 class PencatatanPengeluaranPage2(tk.Tk):
     def __init__(self, db_ref, email, selected_budget=None):
@@ -37,11 +36,9 @@ class PencatatanPengeluaranPage2(tk.Tk):
             return None
     
     def create_widgets(self):
-        # Title
         title_label = tk.Label(self, text="Pencatatan Pengeluaran", font=("Arial", 24, "bold"), bg="lightgreen", fg="green")
         title_label.pack(pady=20)
 
-        # Dropdown for budget categories
         budget_label = tk.Label(self, text="Pilih Kategori Budget", bg="lightgreen", font=("Arial", 14))
         budget_label.pack(pady=10)
 
@@ -50,7 +47,6 @@ class PencatatanPengeluaranPage2(tk.Tk):
         self.budget_dropdown.pack(pady=10)
         self.budget_dropdown.bind("<<ComboboxSelected>>", self.enable_inputs)
 
-        # Input fields
         amount_label = tk.Label(self, text="Jumlah Pengeluaran", bg="lightgreen", font=("Arial", 14))
         amount_label.pack(pady=10)
         self.amount_entry = tk.Entry(self, state='disabled')
@@ -66,18 +62,15 @@ class PencatatanPengeluaranPage2(tk.Tk):
         self.note_text = tk.Text(self, height=5, width=50, state='disabled')
         self.note_text.pack(pady=10)
         
-        # Limit note text length
         self.note_text.bind("<KeyRelease>", self.limit_text_length)
 
-        # Button to save expense
         save_expense_button = tk.Button(self, text="Save Expense", command=self.save_expense, bg="green", fg="white", state='disabled')
         save_expense_button.pack(pady=10)
 
-        # Back to Previous Page Button
         back_button = tk.Button(self, text="Back", command=self.back_to_previous, bg="green", fg="white")
         back_button.place(x=10, y=10)
 
-        self.save_expense_button = save_expense_button  # To enable/disable later
+        self.save_expense_button = save_expense_button  
 
     def enable_inputs(self, event):
         self.amount_entry.config(state='normal')
@@ -118,7 +111,7 @@ class PencatatanPengeluaranPage2(tk.Tk):
 
         user_id = self.get_user_id_by_email(self.email)
         if user_id:
-            # Check budget limit
+            
             if selected_budget not in self.budget_persen:
                 messagebox.showerror("Error", f"Budget '{selected_budget}' tidak ditemukan.")
                 return
@@ -137,7 +130,6 @@ class PencatatanPengeluaranPage2(tk.Tk):
                 messagebox.showerror("Error", "Pengeluaran sudah melebihi batas budget.")
                 return
 
-            # Save to database
             new_expense_ref = self.db_ref.child(user_id).child('catatan_pengeluaran').push()
             new_expense_ref.set({
                 'tanggal': date,
@@ -151,16 +143,8 @@ class PencatatanPengeluaranPage2(tk.Tk):
         
     def back_to_previous(self):
         self.destroy()
-        from pencatatan_keuangan_page import PencatatanKeuangan
-        app = PencatatanKeuangan(self.db_ref, self.email)
+        from pencatatan_pengeluaran_page import PencatatanPengeluaran
+        app = PencatatanPengeluaran(self.db_ref, self.email)
         app.mainloop()
 
-if __name__ == "__main__":
-    # Initialize Firebase
-    cred = credentials.Certificate("path/to/your/firebase/credentials.json")
-    initialize_app(cred, {'databaseURL': 'https://your-database-name.firebaseio.com'})
-    db_ref = db.reference('Users')
-    email = "user@example.com"  # replace with actual email
 
-    app = PencatatanPengeluaranPage2(db_ref, email)
-    app.mainloop()
